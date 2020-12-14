@@ -1,0 +1,33 @@
+
+
+syntax = "proto3";
+
+package keyvaluestore;
+
+// A simple key-value storage service
+// This is main API of interacting with the chord network
+service KeyValueStore {
+  // Provides a value for each key request
+  rpc GetValues (GetRequest) returns (GetResponse) {}
+  // Sets a value on the given key
+  rpc SetValue (SetRequest) returns (SetResponse) {}
+}
+
+// The request message containing the key
+message GetRequest {
+  string key = 1;
+}
+
+// The response message containing the value associated with the key
+message GetResponse {
+  string value = 1;
+}
+
+message SetRequest {
+  string key = 1;
+  string value = 2;
+}
+
+message SetResponse {
+ string key = 1;
+}
