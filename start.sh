@@ -1,8 +1,11 @@
 NODE_INIT_PIDS=()
 
-# For every worker in the list, copy over the hadoop and hive binaries to /local/user/
-cat ~/ddps_2/hosts | while read worker;
+SRC+PATH = ~/source/repos/ddps_2/
+cat ${SRC_PATH}hosts | while read worker;
 do
-  echo "Initializing worker: ${worker}"
-  (echo "" | ssh $worker ~/ddps_2/) &
+  echo "Starting workers: ${worker}"
+  wrk=$(echo $worker | tr ":" "\n")
+  (echo "" | ssh ${wrk[0]} python ${SRC_PATH}server.py ${wrk[@]}) &
 done
+
+echo "Done!"
