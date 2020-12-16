@@ -16,10 +16,10 @@ def host_index(host):
     return hosts.index(host)
 
 
-def log(hostname, message):
+def log(message):
     if len(sys.argv) > 3:
         if sys.argv[3]:
-            with open(f'{hostname}.host.log', "a") as file:
+            with open(f'{sys.argv[1]}.{sys.argv[2]}.host.log', "a") as file:
                 file.write(message + '\n')
     else:
         print(message)
