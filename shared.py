@@ -2,6 +2,7 @@
 This file contains code shared between server and client and is basically a utils class
 """
 import os
+import sys
 
 
 def read_hosts():
@@ -13,3 +14,12 @@ def read_hosts():
 def host_index(host):
     hosts = read_hosts()
     return hosts.index(host)
+
+
+def log(hostname, message):
+    if len(sys.argv) > 3:
+        if sys.argv[3]:
+            with open(f'{hostname}.host.log', "a") as file:
+                file.write(message + '\n')
+    else:
+        print(message)

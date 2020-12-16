@@ -35,7 +35,7 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
             value = self.table[request.key]
             return keyvaluestore_pb2.GetResponse(value=value, hops=0)
         else:
-            print('Forwarding to another node since key is out of range!')
+            shared.log('Forwarding to another node since key is out of range!')
             with grpc.insecure_channel(self.find_successor()) as channel:
                 stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
                 response = stub.GetValues(request)
@@ -48,7 +48,7 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
             return keyvaluestore_pb2.SetResponse(key=request.key, hops=0)
         else:
             # Else forward it to next node
-            print('Forwarding to another node since key is out of range!')
+            shared.log('Forwarding to another node since key is out of range!')
             with grpc.insecure_channel(self.find_successor()) as channel:
                 stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
                 response = stub.SetValue(request)
@@ -63,9 +63,9 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         # Easy way to debug nodes
 
     def node_summary(self):
-        print('=============================')
-        print(f'Summary for node: {self.hostname} ({self.nodeindex})')
-        print(f'Key capacity: {len(self.table)}/{self.keyrange_upper - self.keyrange_lower + 1}')
-        print(f'Key range: [{self.keyrange_lower}-{self.keyrange_upper}]')
-        print(f'Successor: {self.successor}')
-        print(f'Predecessor: {self.predecessor}')
+        shared.log('=============================')
+        shared.log(f'Summary for node: {self.hostname} ({self.nodeindex})')
+        shared.log(f'Key capacity: {len(self.table)}/{self.keyrange_upper - self.keyrange_lower + 1}')
+        shared.log(f'Key range: [{self.keyrange_lower}-{self.keyrange_upper}]')
+        shared.log(f'Successor: {self.successor}')
+        shared.log(f'Predecessor: {self.predecessor}')

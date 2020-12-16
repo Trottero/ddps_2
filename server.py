@@ -8,6 +8,7 @@ from concurrent import futures
 import logging
 import sys
 import grpc
+import shared
 
 import keyvaluestore_pb2
 import keyvaluestore_pb2_grpc
@@ -21,7 +22,7 @@ def serve(nodeId, port):
 
     server.add_insecure_port(f'[::]:{port}')
     server.start()
-    print(f'Started GRPC server on port: {port}')
+    shared.log(f'Started GRPC server on port: {port}')
     server.wait_for_termination()
 
 
