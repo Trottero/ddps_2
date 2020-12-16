@@ -21,6 +21,7 @@ message GetRequest {
 // The response message containing the value associated with the key
 message GetResponse {
   string value = 1;
+  int32 hops = 2;
 }
 
 message SetRequest {
@@ -30,4 +31,5 @@ message SetRequest {
 
 message SetResponse {
  string key = 1;
+ int32 hops = 2;
 }

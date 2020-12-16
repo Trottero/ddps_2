@@ -33,23 +33,27 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         # If it is range of the local key, return it from local
         if self.is_in_range(request.key):
             value = self.table[request.key]
-            return keyvaluestore_pb2.GetResponse(value=value)
+            return keyvaluestore_pb2.GetResponse(value=value, hops=0)
         else:
             print('Forwarding to another node since key is out of range!')
             with grpc.insecure_channel(self.find_successor()) as channel:
                 stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
-                return stub.GetValues(request)
+                response = stub.GetValues(request)
+                response.hops += 1
+                return response
 
     def SetValue(self, request, context):
         if self.is_in_range(request.key):
             self.table[request.key] = request.value
-            return keyvaluestore_pb2.SetResponse(key=request.key)
+            return keyvaluestore_pb2.SetResponse(key=request.key, hops=0)
         else:
             # Else forward it to next node
             print('Forwarding to another node since key is out of range!')
             with grpc.insecure_channel(self.find_successor()) as channel:
                 stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
-                return stub.SetValue(request)
+                response = stub.SetValue(request)
+                response.hops += 1
+                return response
 
     def is_in_range(self, key):
         return int(key) >= self.keyrange_lower and int(key) <= self.keyrange_upper
