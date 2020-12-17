@@ -20,7 +20,7 @@ def serve(nodeId, port):
 
     keyvaluestore_pb2_grpc.add_KeyValueStoreServicer_to_server(keyvaluestore.KeyValueStore(f'{nodeId}:{port}'), server)
 
-    server.add_insecure_port(f'[::]:{port}')
+    server.add_insecure_port(f'{nodeId}:{port}')
     server.start()
     shared.log(f'Started GRPC server on port: {port}')
     server.wait_for_termination()
