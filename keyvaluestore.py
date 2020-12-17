@@ -5,6 +5,7 @@ import keyvaluestore_pb2
 import shared
 import time
 import sys
+import math
 
 
 class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
@@ -22,8 +23,8 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         self.totalnodes = len(hosts)
         self.totalkeys = sys.maxsize - 1
         # For now assume static range of keys
-        self.keyrange_lower = self.nodeindex * self.totalkeys / self.totalnodes
-        self.keyrange_upper = (self.nodeindex + 1) * self.totalkeys / self.totalnodes - 1
+        self.keyrange_lower = math.floor(self.nodeindex * self.totalkeys / self.totalnodes)
+        self.keyrange_upper = math.floor((self.nodeindex + 1) * self.totalkeys / self.totalnodes - 1)
 
         self.successor = hosts[(self.nodeindex + 1) % self.totalnodes]
         self.predecessor = hosts[self.nodeindex - 1]
