@@ -6,7 +6,7 @@ do
   echo "Starting workers: ${worker}"
   wrk=($(echo $worker | tr ":" " "))
 
-  (echo "" | ssh ${wrk[0]} module load python/3.6.0 && python3 -m pip install -r requirements.txt --user && python3 ${SRC_PATH}server.py ${wrk[@]}) &
+  (echo "" | ssh ${wrk[0]} "module load python/3.6.0 && python3 -m pip install -r ${SRC_PATH}requirements.txt --user && python3 ${SRC_PATH}server.py ${wrk[@]}") &
   # (python ${SRC_PATH}server.py ${wrk[@]} ss) &
 done
 
