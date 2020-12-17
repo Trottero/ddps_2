@@ -4,7 +4,7 @@ SRC_PATH=~/ddps_2/
 cat ${SRC_PATH}hosts | while read worker;
 do
   echo "Starting workers: ${worker}"
-  wrk=$(echo $worker | tr ":" " ")
+  wrk=($(echo $worker | tr ":" " "))
   echo ${wrk[@]}
   echo ${wrk[0]}
   (echo "" | ssh ${wrk[0]} dir) &
