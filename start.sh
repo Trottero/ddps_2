@@ -6,6 +6,7 @@ do
   echo "Starting workers: ${worker}"
   wrk=$(echo $worker | tr ":" " ")
   echo ${wrk[@]}
+  echo ${wrk[0]}
   (echo "" | ssh ${wrk[0]} dir) &
   # (echo "" | ssh ${wrk[0]} 'python ${SRC_PATH}server.py ${wrk[@]}') &
   # (python ${SRC_PATH}server.py ${wrk[@]} ss) &
