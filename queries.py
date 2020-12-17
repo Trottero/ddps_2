@@ -12,7 +12,6 @@ def execute_query(query):
     Simple query runner, automatically wraps the function in an instance for a random host
     """
     host = shared.random_host()
-    print(host)
 
     with grpc.insecure_channel(host) as channel:
         return query(channel)
