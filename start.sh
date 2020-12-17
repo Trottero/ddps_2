@@ -1,6 +1,6 @@
 NODE_INIT_PIDS=()
 
-SRC_PATH = ~/source/repos/ddps_2/
+SRC_PATH=~/source/repos/ddps_2/
 cat ${SRC_PATH}hosts | while read worker;
 do
   echo "Starting workers: ${worker}"
