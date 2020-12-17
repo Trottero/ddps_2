@@ -4,31 +4,19 @@ of the chord protocol.
 """
 
 from __future__ import print_function
+import numpy as np
 import logging
+import time
 
 import grpc
 import multiprocessing as mp
-import time
-
-import numpy as np
 
 import shared
 import queries
 
 
-def execute_query(query):
-    # Select random host to start the query on.
-    hosts = shared.read_hosts()
-
-    random_host = np.random.randint(low=0, high=len(hosts))
-
-    print('Executing query on:', hosts[random_host])
-    with grpc.insecure_channel(hosts[random_host]) as channel:
-        query(channel)
-
-
 def basic_kv_test():
-    execute_query(queries.run_kv_test)
+    queries.execute_query(queries.run_kv_test)
 
 
 if __name__ == '__main__':

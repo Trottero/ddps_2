@@ -3,6 +3,18 @@ import numpy as np
 import keyvaluestore_pb2
 import keyvaluestore_pb2_grpc
 import string
+import shared
+import grpc
+
+
+def execute_query(query):
+    """
+    Simple query runner, automatically wraps the function in an instance for a random host
+    """
+    host = shared.read_hosts()
+
+    with grpc.insecure_channel(host) as channel:
+        return query(channel)
 
 
 def run_kv_test(channel):
@@ -30,5 +42,18 @@ def run_kv_writes(channel):
     start_time = time.perf_counter()
     stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
     r1 = stub.SetValue(keyvaluestore_pb2.SetRequest(key=str(key), value=value))
+
+    return (time.perf_counter() - start_time, r1.hops)
+
+
+def run_kv_reads(channel):
+    """
+    Performs a single read on a random hash
+    """
+    key = np.random.randint(low=0, high=100)
+
+    start_time = time.perf_counter()
+    stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
+    r1 = stub.GetValues(keyvaluestore_pb2.GetRequest(key=str(key)))
 
     return (time.perf_counter() - start_time, r1.hops)

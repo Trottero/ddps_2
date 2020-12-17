@@ -3,6 +3,7 @@ This file contains code shared between server and client and is basically a util
 """
 import os
 import sys
+import numpy as np
 
 
 def read_hosts():
@@ -14,6 +15,12 @@ def read_hosts():
 def host_index(host):
     hosts = read_hosts()
     return hosts.index(host)
+
+
+def random_host():
+    hosts = read_hosts()
+    random_host = np.random.randint(low=0, high=len(hosts))
+    return hosts[random_host]
 
 
 def log(message):
