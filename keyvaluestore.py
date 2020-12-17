@@ -4,7 +4,7 @@ import keyvaluestore_pb2
 
 import shared
 import time
-import os
+import sys
 
 
 class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
@@ -20,7 +20,7 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         self.nodeindex = shared.host_index(self.hostname)
 
         self.totalnodes = len(hosts)
-        self.totalkeys = 1000
+        self.totalkeys = sys.maxsize - 1
         # For now assume static range of keys
         self.keyrange_lower = self.nodeindex * self.totalkeys / self.totalnodes
         self.keyrange_upper = (self.nodeindex + 1) * self.totalkeys / self.totalnodes - 1

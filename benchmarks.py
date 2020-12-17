@@ -25,7 +25,18 @@ def benchmark_performance_writes():
     results = []
     with ThreadPoolExecutor(100) as workers:
         results = [workers.submit(query_wrapper, i) for i in range(10000)]
-    shared.log(f'Benchmark finished in {time.perf_counter() - start}s')
+    stop = time.perf_counter() - start
     # Convert to 2d array
     r_2d = np.array([list(i.result()) for i in results])
-    shared.log(f'Average job running time: {np.mean(r_2d[:, 0]) * 1000}ms; average hops: {np.mean(r_2d[:, 1])}')
+
+    avg_job_time = np.mean(r_2d[:, 0]) * 1000
+    avg_hops = np.mean(r_2d[:, 1])
+    filename = f'benchmark_performance_writes_{int(round(time.time()))}'
+    # Save it to a persitent file
+    shared.log(f'{avg_job_time} {avg_hops}', filename)
+    for q in r_2d:
+        shared.log(f'{q[0]} {q[1]}', filename)
+
+    # Notify user using terminal that the benchmark has finished
+    shared.log(f'Benchmark finished in {stop}s')
+    shared.log(f'Average job running time: {avg_job_time}ms; average hops: {avg_hops}')
