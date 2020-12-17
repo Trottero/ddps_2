@@ -24,7 +24,7 @@ def benchmark_performance_writes():
     start = time.perf_counter()
     results = []
     with ThreadPoolExecutor(100) as workers:
-        results = [workers.submit(query_wrapper, i) for i in range(10000)]
+        results = [workers.submit(query_wrapper, i) for i in range(10)]
     shared.log(f'Benchmark finished in {time.perf_counter() - start}s')
     # Convert to 2d array
     r_2d = np.array([list(i.result()) for i in results])
