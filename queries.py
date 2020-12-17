@@ -11,7 +11,7 @@ def execute_query(query):
     """
     Simple query runner, automatically wraps the function in an instance for a random host
     """
-    host = shared.read_hosts()
+    host = shared.random_host()
 
     with grpc.insecure_channel(host) as channel:
         return query(channel)
@@ -35,14 +35,13 @@ def run_kv_writes(channel):
     """
     Simple function which performs a write on a random index with a random value
     """
-    base = string.digits + string.ascii_letters
+    base = (string.digits + string.ascii_letters).split()
     key = np.random.randint(low=0, high=100)
-    value = [np.random.choice(base) for i in range(10)]
+    value = "".join([np.random.choice(base) for i in range(10)])
 
     start_time = time.perf_counter()
     stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
     r1 = stub.SetValue(keyvaluestore_pb2.SetRequest(key=str(key), value=value))
-
     return (time.perf_counter() - start_time, r1.hops)
 
 

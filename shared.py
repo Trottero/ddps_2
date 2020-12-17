@@ -3,6 +3,7 @@ This file contains code shared between server and client and is basically a util
 """
 import os
 import sys
+from datetime import datetime
 import numpy as np
 
 
@@ -23,10 +24,15 @@ def random_host():
     return hosts[random_host]
 
 
-def log(message):
+def log(message, File=None):
     if len(sys.argv) > 3:
         if sys.argv[3]:
             with open(f'{sys.argv[1]}.{sys.argv[2]}.host.log', "a") as file:
-                file.write(message + '\n')
+                now = datetime.now()
+                file.write(f'[{now.strftime("%d-%m-%Y %H:%M:%S")}]{message}\n')
+    elif File is not None:
+        with open(f'{File}.log', "a") as file:
+            now = datetime.now()
+            file.write(f'[{now.strftime("%d-%m-%Y %H:%M:%S")}]{message}\n')
     else:
         print(message)
