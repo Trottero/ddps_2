@@ -36,9 +36,10 @@ def run_kv_writes(channel):
     """
     Simple function which performs a write on a random index with a random value
     """
-    base = (string.digits + string.ascii_letters).split()
-    key = np.random.randint(low=0, high=sys.maxsize - 1)
-    value = "".join([np.random.choice(base) for i in range(10)])
+    base = [x for x in string.digits + string.ascii_letters]
+
+    key = np.random.randint(low=0, high=10000)
+    value = "".join(np.random.choice(base, size=10))
 
     start_time = time.perf_counter()
     stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
@@ -50,7 +51,7 @@ def run_kv_reads(channel):
     """
     Performs a single read on a random hash
     """
-    key = np.random.randint(low=0, high=sys.maxsize - 1)
+    key = np.random.randint(low=0, high=10000)
 
     start_time = time.perf_counter()
     stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)

@@ -23,12 +23,13 @@ def benchmark_performance_writes():
     """
     start = time.perf_counter()
     results = []
-    with ThreadPoolExecutor(100) as workers:
-        results = [workers.submit(query_wrapper, i) for i in range(10000)]
-    stop = time.perf_counter() - start
-    # Convert to 2d array
-    r_2d = np.array([list(i.result()) for i in results])
+    with ThreadPoolExecutor(10) as workers:
+        results = [workers.submit(query_wrapper, i) for i in range(1000)]
 
+        # Convert to 2d array
+        r_2d = np.array([list(i.result()) for i in results])
+
+    stop = time.perf_counter() - start
     avg_job_time = np.mean(r_2d[:, 0]) * 1000
     avg_hops = np.mean(r_2d[:, 1])
     filename = f'benchmark_performance_writes_{int(round(time.time()))}'
