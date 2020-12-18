@@ -38,11 +38,13 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         i = 0
         # Start with successor
         x = (self.nodeindex + 1) % self.totalnodes
+        table_l = 0
         lower, upper = self.calculate_range(x, self.totalkeys, self.totalnodes)
-        while x != self.nodeindex:
+        while x != self.nodeindex and table_l <= self.totalnodes / 2:
             table.append((hosts[x], lower, upper))
 
             # Prepare x for next iteration
+            table_l = 2**(i + 1)
             x = (self.nodeindex + 2**(i + 1)) % self.totalnodes
             lower, upper = self.calculate_range(x, self.totalkeys, self.totalnodes)
             i += 1
