@@ -1,0 +1,10 @@
+[23-12-2020 21:58:34]=============================
+[23-12-2020 21:58:34]Summary for node: node040:50051 (10)
+[23-12-2020 21:58:34]Key capacity: 0/625
+[23-12-2020 21:58:34]Key range: [6250-6874]
+[23-12-2020 21:58:34]Successor: ('node041:50051', 6875, 7499)
+[23-12-2020 21:58:34]Predecessor: node039:50051
+[23-12-2020 21:58:34]Finger table: [('node041:50051', 6875, 7499), ('node042:50051', 7500, 8124), ('node044:50051', 8750, 9374), ('node032:50051', 1250, 1874)]
+[23-12-2020 21:58:34]Started GRPC server on port: 50051
+[23-12-2020 22:03:14]An error occured whilst attempting to reach node041:50051 the following exception was raised:
+[23-12-2020 22:03:14]<class 'grpc._channel._InactiveRpcError'>
