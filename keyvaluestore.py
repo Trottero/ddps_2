@@ -13,7 +13,7 @@ import math
 class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
     # This is launched upon launching the server, we initialize the keyvalue store here and the nodes that it should connect to.
     # This also means that we should do the logic of a node joining the circle here
-    def __init__(self, hostname, search_type='finger'):
+    def __init__(self, hostname, search_type='linear'):
         self.table = {}
         self.search_type = search_type
         self.hostname = hostname
