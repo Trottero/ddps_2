@@ -1,4 +1,6 @@
 import grpc
+import numpy as np
+
 import keyvaluestore_pb2_grpc
 import keyvaluestore_pb2
 
@@ -36,19 +38,11 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         table = []
 
         i = 0
-        # Start with successor
-        x = (self.nodeindex + 1) % self.totalnodes
-        table_l = 0
-        lower, upper = self.calculate_range(x, self.totalkeys, self.totalnodes)
-        while x != self.nodeindex and table_l <= self.totalnodes / 2:
-            table.append((hosts[x], lower, upper))
-
-            # Prepare x for next iteration
-            table_l = 2**(i + 1)
-            x = (self.nodeindex + 2**(i + 1)) % self.totalnodes
+        while len(table) < math.floor(np.log2(self.totalnodes)):
+            x = (self.nodeindex + 2**i) % self.totalnodes
             lower, upper = self.calculate_range(x, self.totalkeys, self.totalnodes)
+            table.append((hosts[x], lower, upper))
             i += 1
-
         return table
 
     def calculate_range(self, index, total_keys, total_nodes):
@@ -73,13 +67,19 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
             return keyvaluestore_pb2.SetResponse(key=request.key, hops=0)
         else:
             # Else forward it to next node
-            shared.log('Forwarding to another node since key is out of range!')
-
-            with grpc.insecure_channel(self.find_successor(request.key)) as channel:
-                stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
-                response = stub.SetValue(request)
-                response.hops += 1
-                return response
+            response = None
+            successor = self.find_successor(request.key)
+            try:
+                with grpc.insecure_channel(successor) as channel:
+                    stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
+                    response = stub.SetValue(request)
+            except:
+                e = sys.exc_info()[0]
+                shared.log(
+                    f'An error occured whilst attempting to reach {successor} the following exception was raised:')
+                shared.log(f'{e}')
+            response.hops += 1
+            return response
 
     def is_in_range(self, key):
         return int(key) >= self.keyrange_lower and int(key) <= self.keyrange_upper

@@ -21,14 +21,19 @@ def benchmark_performance_writes():
         Performance benchmark, returns the average time it takes for a write query to complete. 
         It also measures the average hops it took to reach the destination node
     """
+    reps = 10
     start = time.perf_counter()
+
     results = []
-    with ThreadPoolExecutor(100) as workers:
-        results = [workers.submit(query_wrapper, i) for i in range(10000)]
+    r_2d = []
+    for _ in range(reps):
+        with ThreadPoolExecutor(10) as workers:
+            results = [workers.submit(query_wrapper, i) for i in range(1000)]
 
-        # Convert to 2d array
-        r_2d = np.array([list(i.result()) for i in results])
+            # Convert and append to existing results
+            r_2d.extend([list(i.result()) for i in results])
 
+    r_2d = np.array(r_2d)
     stop = time.perf_counter() - start
     avg_job_time = np.mean(r_2d[:, 0]) * 1000
     avg_hops = np.mean(r_2d[:, 1])
