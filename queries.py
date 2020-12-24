@@ -25,7 +25,7 @@ def run_kv_test(channel):
     """
     start_time = time.perf_counter()
     stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
-    r1 = stub.SetValue(keyvaluestore_pb2.SetRequest(key='1', value='banaan 1'))
+    r1 = stub.SetValue(keyvaluestore_pb2.SetRequest(key='1', value='banaan 1', type='query'))
     r2 = stub.GetValues(keyvaluestore_pb2.GetRequest(key='1'))
     hops = (r1.hops + r2.hops) / 2
 
@@ -43,7 +43,7 @@ def run_kv_writes(channel):
 
     start_time = time.perf_counter()
     stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
-    r1 = stub.SetValue(keyvaluestore_pb2.SetRequest(key=str(key), value=value))
+    r1 = stub.SetValue(keyvaluestore_pb2.SetRequest(key=str(key), value=value, type='query'))
     return (time.perf_counter() - start_time, r1.hops)
 
 

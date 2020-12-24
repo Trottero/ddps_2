@@ -50,7 +50,8 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
 
     def GetValues(self, request, context):
         # If it is range of the local key, return it from local
-        if self.is_in_range(request.key):
+        # We use the upper of the successor here as this node also stores data from it's successor
+        if self.is_in_range_of(request.key, self.keyrange_lower, self.fingertable[0][2] + 1):
             value = self.table[request.key]
             return keyvaluestore_pb2.GetResponse(value=value, hops=0)
         else:
@@ -62,7 +63,27 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
                 return response
 
     def SetValue(self, request, context):
-        if self.is_in_range(request.key):
+        # Entry point, current node
+        if self.is_in_range_of(request.key, self.keyrange_lower, self.keyrange_upper + 1):
+            # Also tell its predecessor that we he has to maintain it's copy
+            if request.type != 'replication':
+                with grpc.insecure_channel(self.predecessor) as channel:
+                    stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
+                    request.type = 'replication'
+                    response = stub.SetValue(request)
+            # Set our own key
+            self.table[request.key] = request.value
+            return keyvaluestore_pb2.SetResponse(key=request.key, hops=0)
+
+        # Entry point: predecessor
+        elif self.is_in_range_of(request.key, self.fingertable[0][1], self.fingertable[0][2] + 1):
+            # if it is in range of the successor, we can update table locally and tell successor to also update
+            if request.type != 'replication':
+                with grpc.insecure_channel(self.fingertable[0][0]) as channel:
+                    stub = keyvaluestore_pb2_grpc.KeyValueStoreStub(channel)
+                    request.type = 'replication'
+                    response = stub.SetValue(request)
+                    # Set our own key
             self.table[request.key] = request.value
             return keyvaluestore_pb2.SetResponse(key=request.key, hops=0)
         else:
@@ -80,9 +101,6 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
                 shared.log(f'{e}')
             response.hops += 1
             return response
-
-    def is_in_range(self, key):
-        return int(key) >= self.keyrange_lower and int(key) <= self.keyrange_upper
 
     def find_successor(self, key):
         """
@@ -143,7 +161,8 @@ class KeyValueStore(keyvaluestore_pb2_grpc.KeyValueStoreServicer):
         shared.log('=============================')
         shared.log(f'Summary for node: {self.hostname} ({self.nodeindex})')
         shared.log(f'Key capacity: {len(self.table)}/{self.keyrange_upper - self.keyrange_lower + 1}')
-        shared.log(f'Key range: [{self.keyrange_lower}-{self.keyrange_upper}]')
+        shared.log(
+            f'Key range: [{self.keyrange_lower}-{self.keyrange_upper}], [{self.fingertable[0][1]}-{self.fingertable[0][2]}]')
         shared.log(f'Successor: {self.fingertable[0]}')
         shared.log(f'Predecessor: {self.predecessor}')
         shared.log(f'Finger table: {self.fingertable}')

@@ -27,6 +27,7 @@ message GetResponse {
 message SetRequest {
   string key = 1;
   string value = 2;
+  string type = 3; // This type allows it to figure out the difference between a query and a replication request.
 }
 
 message SetResponse {
